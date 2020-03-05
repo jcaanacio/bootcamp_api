@@ -1,0 +1,28 @@
+{
+  "name": "bootcamp_api",
+  "version": "1.0.0",
+  "description": "DevCamper backend API",
+  "main": "server.js",
+  "scripts": {
+    "start": "SET NODE_ENV=production&nodemon server",
+    "dev": "nodemon server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jcaanacio/bootcamp_api.git"
+  },
+  "author": "Anacio, Jay Christopher A",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jcaanacio/bootcamp_api/issues"
+  },
+  "homepage": "https://github.com/jcaanacio/bootcamp_api#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "loadash": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
