@@ -1,4 +1,4 @@
-
+const ErrorResponse = require('../utils/ErrorResponse');
 class BootcampController {
 
     constructor(model) {
@@ -11,6 +11,7 @@ class BootcampController {
             response.status(200).json({
                 success:true,
                 message: `List of bootcamps`,
+                count: bootcamps.length,
                 body: bootcamps
             });
         } catch (err) {
@@ -23,22 +24,19 @@ class BootcampController {
         try {
             const bootcamp = await this._model.findById(request.params.id);
             if (!bootcamp) {
-                return response.status(400).json({sucess: false});
+                // return response.status(400).json({sucess: false});
+                return next(new ErrorResponse(`Bootcamp not found with the id of ${request.params.id}`, 404));
             }
             
-            response.status(200).json({
+            return response.status(200).json({
                 success:true,
-                message: `List of bootcamps`,
+                message: `List of bootcamp`,
                 body: bootcamp
             });
         } catch (err) {
-            response.status(400).json({sucess: false});
+            // response.status(400).json({sucess: false});
+            next(new ErrorResponse(err.message, 400));
         }
-
-        response.status(200).json({
-            success: true,
-            message: `Bootcamp ${request.params.id}`
-        });
     };
 
     create = async (request, response, next) => {
@@ -55,29 +53,43 @@ class BootcampController {
         
     };
 
-    updateById = (request, response, next) => {
-        response.status(200).json({
-            success:true,
-            message: `Updated Bootcamp ${request.params.id}`
-        });
-    };
-
-    deleteById = async (request, response, next) => {
+    updateById = async (request, response, next) => {
+        
         try {
-            const bootcamp = this._model.findByIdAndDelete(request.params.id);
-            console.log(request.params.id);
-            // console.log();
+            const bootcamp = await this._model.findByIdAndUpdate(request.params.id,request.body, {
+                new: true,
+                runValidators: true
+            });
             if (!bootcamp) {
                 return response.status(400).json({sucess: false , body: bootcamp});
             }
 
             response.status(200).json({
+                success:true,
+                message: `Updated Bootcamp ${request.params.id}`,
+                body: bootcamp
+            });
+        } catch (err) {
+            return response.status(400).json({sucess: false , body: err});
+        }
+        
+    };
+
+    deleteById = async (request, response, next) => {
+        try {
+            const bootcamp = await this._model.findByIdAndDelete(request.params.id);
+            // console.log();
+            if (!bootcamp) {
+                return response.status(400).json({sucess: false , body: bootcamp});
+            }
+
+            return response.status(200).json({
                 success: true,
                 message: `Deleted Bootcamp ${request.params.id}`,
                 body: bootcamp
             });
         } catch (err) {
-            response.status(400).json({sucess: false, error: err});
+            return response.status(400).json({sucess: false, error: err});
         }
     };
 }

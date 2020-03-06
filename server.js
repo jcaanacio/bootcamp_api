@@ -8,17 +8,19 @@ const colors = require('colors');
 dotenv.config({path: './config/index.env'});
 const app = express();
 const PORT = process.env.PORT || 5000;
+const ErrorHandler = require('./middleware/errorHandler.middleware');
 app.use(express.json());
 
 connectDB();
 
-app.use(Logger);
+// app.use(Logger);
 
 if (process.env.NODE_ENV === "development") {
     app.use(Morgan('dev'));
 }
 
 app.use('/api/v1/bootcamps',BootcampsRouter);
+app.use(ErrorHandler);
 const server = app.listen(PORT, () => {
     console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold)
 });
