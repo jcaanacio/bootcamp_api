@@ -1,13 +1,13 @@
 const ErrorResponse = require('../utils/ErrorResponse');
 class BootcampController {
 
-    constructor(model) {
-        this._model = model;
+    constructor(bootcampService) {
+        this._bootcampService = bootcampService;
     }
 
     get = async (request, response, next) => {
         try {
-            const bootcamps = await this._model.find();
+            const bootcamps = await this._bootcampService.getAllBootcamps();
             response.status(200).json({
                 success:true,
                 message: `List of bootcamps`,
@@ -22,7 +22,7 @@ class BootcampController {
 
     getById = async (request, response, next) => {
         try {
-            const bootcamp = await this._model.findById(request.params.id);
+            const bootcamp = await this._bootcampService.getBootcampById(request.params.id);
             if (!bootcamp) {
                 // return response.status(400).json({sucess: false});
                 return next(new ErrorResponse(`Bootcamp not found with the id of ${request.params.id}`, 404));
@@ -41,7 +41,7 @@ class BootcampController {
 
     create = async (request, response, next) => {
         try {
-            const bootcamp = await this._model.create(request.body);
+            const bootcamp = await this._bootcampService.create(request.body);
             response.status(200).json({
                 success: true,
                 message: `Created new bootcamp`,
@@ -56,10 +56,7 @@ class BootcampController {
     updateById = async (request, response, next) => {
         
         try {
-            const bootcamp = await this._model.findByIdAndUpdate(request.params.id,request.body, {
-                new: true,
-                runValidators: true
-            });
+            const bootcamp = await this._bootcampService.updateById(request.params.id,request.body);
             if (!bootcamp) {
                 return response.status(400).json({sucess: false , body: bootcamp});
             }
@@ -77,8 +74,7 @@ class BootcampController {
 
     deleteById = async (request, response, next) => {
         try {
-            const bootcamp = await this._model.findByIdAndDelete(request.params.id);
-            // console.log();
+            const bootcamp = await this._bootcampService.deleteById(request.params.id);
             if (!bootcamp) {
                 return response.status(400).json({sucess: false , body: bootcamp});
             }

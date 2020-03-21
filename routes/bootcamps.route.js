@@ -2,16 +2,18 @@ const express = require('express');
 const router = express.Router();
 const BootcampController = require('../controllers/bootcamp.controller');
 const BootcampModel = require('./../models/Bootcamp.model');
-const bootCamp = new BootcampController(BootcampModel);
+const BootcampService = require('../services/bootcamp.service');
+const bootcampService = new BootcampService(BootcampModel);
+const bootcampController = new BootcampController(bootcampService);
 
 
 router.route('/')
-    .get(bootCamp.get)
-    .post(bootCamp.create);
+    .get(bootcampController.get)
+    .post(bootcampController.create);
 
 router.route('/:id')
-    .get(bootCamp.getById)
-    .delete(bootCamp.deleteById)
-    .put(bootCamp.updateById);
+    .get(bootcampController.getById)
+    .delete(bootcampController.deleteById)
+    .put(bootcampController.updateById);
 
 module.exports = router;
