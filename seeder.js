@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const fs = require('fs');
 const colors = require('colors');
+const connectDB = require('./config/db.js');
 
 
 /**
@@ -19,13 +19,7 @@ const Bootcamp = require('./models/Bootcamp.model');
  /** 
   * Connect to DB
   */
-
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true
-});
+connectDB();
 
 
 /**
