@@ -7,7 +7,4 @@ const options = {
     formatter: null
 };
 
-console.log(options);
-// const geocoder = NodeGeocoder(options);
-
 module.exports = NodeGeocoder(options);
