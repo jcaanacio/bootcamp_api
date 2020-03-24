@@ -1,5 +1,6 @@
 const ErrorResponse = require('../utils/ErrorResponse');
 const AsyncHandler = require('../middleware/asyncHandler');
+const geocoder = require('../utils/GeoCoder');
 class BootcampController {
 
     constructor(bootcampService) {
@@ -61,6 +62,30 @@ class BootcampController {
             success: true,
             message: `Deleted Bootcamp ${request.params.id}`,
             body: bootcamp
+        });
+    });
+
+    getWithInRadius = AsyncHandler(async (request, response, next) => {
+        const {zipcode, distance} = request.params;
+        /**
+         * get lat/lang from geocoder
+         */
+
+        const location = await geocoder.geocode(zipcode);
+        const geocoded = location[0];
+        const {longitude,latitude} = geocoded;
+        
+        /**
+         * Earth Radius = 3963 mi/ 6,379 km
+         */
+        const radius = distance / 3963;
+        
+        const bootcamps = await this._bootcampService.getBootcampWithInRadius(longitude, latitude, radius);
+
+        return response.status(200).json({
+            sucess: true,
+            message: `Bootcamps within the ${zipcode}`,
+            body: bootcamps
         });
     });
 }
