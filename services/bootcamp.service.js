@@ -10,7 +10,7 @@ class BootcampService {
          * Fields to exclude 
          */
 
-        const removeFields = ['select'];
+        const removeFields = ['select','sort'];
         /**
          * Loop over removeFields and delete them from the query
          */
@@ -33,6 +33,14 @@ class BootcampService {
             console.log(fields);
             bootcamps = bootcamps.select(fields);
         }
+        let orderBy ;
+        if (parameters.sort) {
+            orderBy = parameters.sort.split(',').join(' ');
+        } else {
+            orderBy = '-createAt';
+        }
+
+        bootcamps.sort(orderBy);
         
         return bootcamps;
     }
