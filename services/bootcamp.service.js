@@ -10,7 +10,7 @@ class BootcampService {
          * Fields to exclude 
          */
 
-        const removeFields = ['select'];
+        const removeFields = ['select','sort'];
         /**
          * Loop over removeFields and delete them from the query
          */
@@ -29,10 +29,18 @@ class BootcampService {
 
         let bootcamps = this._model.find(JSON.parse(stringedParams));
         if (parameters.select) {
-            const fields = parameters.select.split(',').join(' ');
-            console.log(fields);
-            bootcamps = bootcamps.select(fields);
+            const filterFields = parameters.select.split(',').join(' ');
+            bootcamps = bootcamps.select(filterFields);
         }
+
+        let orderBy ;
+        if (parameters.sort) {
+            orderBy = parameters.sort.split(',').join(' ');
+        } else {
+            orderBy = '-createAt';
+        }
+
+        bootcamps.sort(orderBy);
         
         return bootcamps;
     }
