@@ -4,11 +4,37 @@ class BootcampService {
         this._model = model;
     }
 
-    getAllBootcamps = (params) => {
-        let query = JSON.stringify(params);
-        query = query.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
-        console.log(query);
-        return this._model.find(JSON.parse(query));
+    getAllBootcamps = (parameters) => {
+        const params = {...parameters};     
+        /**
+         * Fields to exclude 
+         */
+
+        const removeFields = ['select'];
+        /**
+         * Loop over removeFields and delete them from the query
+         */
+        removeFields.forEach(field => delete params[field]);
+
+
+        let stringedParams = JSON.stringify(params);
+        /**
+         * Create Query Operators
+         */
+        stringedParams = stringedParams.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
+
+        /**
+         * select fields
+         */
+
+        let bootcamps = this._model.find(JSON.parse(stringedParams));
+        if (parameters.select) {
+            const fields = parameters.select.split(',').join(' ');
+            console.log(fields);
+            bootcamps = bootcamps.select(fields);
+        }
+        
+        return bootcamps;
     }
 
     getBootcampById = (id) => {
