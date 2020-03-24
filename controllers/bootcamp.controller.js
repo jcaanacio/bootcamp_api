@@ -8,7 +8,7 @@ class BootcampController {
     }
 
     get = AsyncHandler( async (request, response, next) => {
-        const bootcamps = await this._bootcampService.getAllBootcamps();
+        const bootcamps = await this._bootcampService.getAllBootcamps(request.query);
         response.status(200).json({
             success:true,
             message: `List of bootcamps`,

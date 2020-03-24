@@ -4,8 +4,11 @@ class BootcampService {
         this._model = model;
     }
 
-    getAllBootcamps = () => {
-        return this._model.find();
+    getAllBootcamps = (params) => {
+        let query = JSON.stringify(params);
+        query = query.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
+        console.log(query);
+        return this._model.find(JSON.parse(query));
     }
 
     getBootcampById = (id) => {
