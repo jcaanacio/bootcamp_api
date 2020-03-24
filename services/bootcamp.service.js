@@ -12,6 +12,20 @@ class BootcampService {
         return this._model.findById(id);
     }
 
+    getBootcampWithInRadius = (longitude, latitude, radius) => {
+        return this._model.find({
+            location: {
+                $geoWithin: {
+                    $centerSphere: [
+                        [longitude, latitude],
+                        radius
+                    ]
+                }
+
+            }
+        });
+    }
+
     create = (bootcamp) => {
         return this._model.create(bootcamp);
     }
