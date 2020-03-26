@@ -6,7 +6,8 @@ const BootcampService = require('../services/bootcamp.service');
 const bootcampService = new BootcampService(BootcampModel);
 const bootcampController = new BootcampController(bootcampService);
 
-router.route('/radius/:zipcode/:distance').get(bootcampController.getWithInRadius)
+router.route('/radius/:zipcode/:distance').get(bootcampController.getWithInRadius);
+
 router.route('/')
     .get(bootcampController.get)
     .post(bootcampController.create);

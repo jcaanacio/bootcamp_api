@@ -4,6 +4,10 @@ class BootcampService {
         this._model = model;
     }
 
+    getAll = (parameters) => {
+        return this._model.find(parameters);
+    }
+
     getAllBootcamps = (parameters) => {
         const params = {...parameters};     
         /**
@@ -33,11 +37,9 @@ class BootcampService {
             bootcamps = bootcamps.select(filterFields);
         }
 
-        let orderBy ;
+        let orderBy = '-createAt';
         if (parameters.sort) {
             orderBy = parameters.sort.split(',').join(' ');
-        } else {
-            orderBy = '-createAt';
         }
 
         /**
@@ -109,6 +111,10 @@ class BootcampService {
 
     deleteById = (id) => {
         return this._model.findByIdAndDelete(id);
+    }
+
+    countDocuments = () => {
+        return this._model.countDocuments();
     }
 
 }

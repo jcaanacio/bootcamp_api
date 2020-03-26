@@ -1,18 +1,33 @@
 const ErrorResponse = require('../utils/ErrorResponse');
 const AsyncHandler = require('../middleware/asyncHandler');
 const geocoder = require('../utils/GeoCoder');
-class BootcampController {
+const Controller = require('../utils/Controller');
+class BootcampController extends Controller {
 
     constructor(bootcampService) {
+        super();
         this._bootcampService = bootcampService;
     }
 
     get = AsyncHandler( async (request, response, next) => {
-        const bootcamps = await this._bootcampService.getAllBootcamps(request.query);
+        // const bootcamps = await this._bootcampService.getAllBootcamps(request.query);
+        const query = this.parseQueryOperators({...request.query});
+        const filterFields = this.selectFields(request.query.select);
+        
+        let bootcamps = this._bootcampService.getAll(query);
+        bootcamps = bootcamps.select(filterFields);
+        bootcamps = bootcamps.sort(this.orderBy(request.query.sort));
+
+        const totalDocuments =  await this._bootcampService.countDocuments();
+        const pagination = this.pagination(request.query.pageIndex, request.query.limit, totalDocuments);
+        bootcamps = bootcamps.skip(pagination.startIndex).limit(pagination.limit);
+        bootcamps = await bootcamps;
+
         response.status(200).json({
             success:true,
             message: `List of bootcamps`,
             count: bootcamps.length,
+            pagination: pagination,
             body: bootcamps
         });
     });
