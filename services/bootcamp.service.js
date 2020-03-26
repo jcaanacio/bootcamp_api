@@ -10,7 +10,7 @@ class BootcampService {
          * Fields to exclude 
          */
 
-        const removeFields = ['select','sort'];
+        const removeFields = ['select','sort','limit','page'];
         /**
          * Loop over removeFields and delete them from the query
          */
@@ -40,7 +40,40 @@ class BootcampService {
             orderBy = '-createAt';
         }
 
+        /**
+         * Pagination
+         */
+        const page = parseInt(parameters.page, 10) || 1;
+        const limit = parseInt(parameters.limit, 10) || 1;
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+        // const totalDocuments = this._model.countDocuments();
+
+        // /**
+        //  * Pagination Results
+        //  */
+        // const pagination = {};
+        // if (endIndex < totalDocuments) {
+        //     pagination.next = {
+        //         page: page + 1,
+        //         limit
+        //     }
+        // }
+
+        // if (startIndex > 0 ) {
+        //     pagination.prev = {
+        //         page: page - 1,
+        //         limit
+        //     }
+        // }
+
+        bootcamps = bootcamps.skip(startIndex).limit(limit);
         bootcamps.sort(orderBy);
+
+        // const data = {
+        //     data: bootcamps,
+        //     page: pagination
+        // }
         
         return bootcamps;
     }
