@@ -4,13 +4,17 @@ class BootcampService {
         this._model = model;
     }
 
+    getAll = (parameters) => {
+        return this._model.find(parameters);
+    }
+
     getAllBootcamps = (parameters) => {
         const params = {...parameters};     
         /**
          * Fields to exclude 
          */
 
-        const removeFields = ['select','sort'];
+        const removeFields = ['select','sort','limit','page'];
         /**
          * Loop over removeFields and delete them from the query
          */
@@ -33,14 +37,45 @@ class BootcampService {
             bootcamps = bootcamps.select(filterFields);
         }
 
-        let orderBy ;
+        let orderBy = '-createAt';
         if (parameters.sort) {
             orderBy = parameters.sort.split(',').join(' ');
-        } else {
-            orderBy = '-createAt';
         }
 
+        /**
+         * Pagination
+         */
+        const page = parseInt(parameters.page, 10) || 1;
+        const limit = parseInt(parameters.limit, 10) || 1;
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+        // const totalDocuments = this._model.countDocuments();
+
+        // /**
+        //  * Pagination Results
+        //  */
+        // const pagination = {};
+        // if (endIndex < totalDocuments) {
+        //     pagination.next = {
+        //         page: page + 1,
+        //         limit
+        //     }
+        // }
+
+        // if (startIndex > 0 ) {
+        //     pagination.prev = {
+        //         page: page - 1,
+        //         limit
+        //     }
+        // }
+
+        bootcamps = bootcamps.skip(startIndex).limit(limit);
         bootcamps.sort(orderBy);
+
+        // const data = {
+        //     data: bootcamps,
+        //     page: pagination
+        // }
         
         return bootcamps;
     }
@@ -76,6 +111,10 @@ class BootcampService {
 
     deleteById = (id) => {
         return this._model.findByIdAndDelete(id);
+    }
+
+    countDocuments = () => {
+        return this._model.countDocuments();
     }
 
 }
