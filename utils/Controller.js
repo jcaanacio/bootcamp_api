@@ -8,7 +8,7 @@ class Controller {
             'select',
             'sort',
             'limit',
-            'page'
+            'pageIndex'
         ];
     }
 
