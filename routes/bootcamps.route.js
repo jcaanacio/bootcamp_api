@@ -5,7 +5,15 @@ const BootcampModel = require('./../models/Bootcamp.model');
 const BootcampService = require('../services/bootcamp.service');
 const bootcampService = new BootcampService(BootcampModel);
 const bootcampController = new BootcampController(bootcampService);
+/**
+ * Include other resource routers
+ */
 
+const courseRouter = require('./courses.route');
+/**
+ * Re-route into other reource routers
+ */
+router.use('/:bootcampId/courses',courseRouter);
 router.route('/radius/:zipcode/:distance').get(bootcampController.getWithInRadius);
 
 router.route('/')
