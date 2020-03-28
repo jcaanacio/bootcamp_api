@@ -41,7 +41,7 @@ class Controller {
 
     pagination = (page, limit, totalDocuments) => {
         const pg = parseInt(page, 10) || 1;
-        const lmt = parseInt(limit, 10) || 1;
+        const lmt = parseInt(limit, 10) || 25;
         const startIndex = (pg - 1) * lmt;
         const endIndex = pg * lmt;
         /**
