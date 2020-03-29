@@ -5,8 +5,11 @@ class Service {
     }
 
     getAll = (parameters) => {
-        console.log(parameters);
         return this._model.find(parameters);
+    }
+
+    getById = (id) => {
+        return this._model.findById(id);
     }
 
     create = (model) => {

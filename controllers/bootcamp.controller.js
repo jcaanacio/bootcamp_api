@@ -15,6 +15,7 @@ class BootcampController extends Controller {
         const filterFields = this.selectFields(request.query.select);
         
         let bootcamps = this._bootcampService.getAll(query);
+        bootcamps = bootcamps.populate({path: 'courses',select: 'title description'});
         bootcamps = bootcamps.select(filterFields);
         bootcamps = bootcamps.sort(this.orderBy(request.query.sort));
 
@@ -33,11 +34,13 @@ class BootcampController extends Controller {
     });
 
     getById = AsyncHandler(async (request, response, next) => {
-        const bootcamp = await this._bootcampService.getBootcampById(request.params.id);
-        if (!bootcamp) {
+        let query = this._bootcampService.getById(request.params.id);
+        query = query.populate({path: 'courses',select: 'title description'});
+        if (!query) {
             return next(new ErrorResponse(`Bootcamp not found with the id of ${request.params.id}`, 404));
         }
         
+        const bootcamp = await query;
         return response.status(200).json({
             success:true,
             message: `List of bootcamp`,
@@ -68,10 +71,12 @@ class BootcampController extends Controller {
     });
 
     deleteById = AsyncHandler(async (request, response, next) => {
-        const bootcamp = await this._bootcampService.deleteById(request.params.id);
+        const bootcamp = await this._bootcampService.getById(request.params.id);
         if (!bootcamp) {
-            return response.status(400).json({sucess: false , body: bootcamp});
+            return next(new ErrorResponse(`Bootcamp not found with the id of ${request.params.id}`, 404));
         }
+
+        bootcamp.remove();
 
         return response.status(200).json({
             success: true,
