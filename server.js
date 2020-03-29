@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const BootcampsRouter = require('../bootcamp_api/routes/bootcamps.route');
+const Courses = require('../bootcamp_api/routes/courses.route');
 const Logger = require('./middleware/logger.middleware');
 const Morgan = require('morgan');
 const connectDB = require('./config/db');
@@ -20,6 +21,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use('/api/v1/bootcamps',BootcampsRouter);
+app.use('/api/v1/courses',Courses);
 app.use(ErrorHandler);
 const server = app.listen(PORT, () => {
     console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold)
