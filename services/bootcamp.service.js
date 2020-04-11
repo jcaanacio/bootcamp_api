@@ -1,23 +1,20 @@
-const Service = require('../services/Service');
+const Service = require("../services/Service");
 class BootcampService extends Service {
+  #model;
+  constructor(model) {
+    super(model);
+    this.#model = model;
+  }
 
-    constructor (model) {
-        super(model);
-    }
-
-    getBootcampWithInRadius = (longitude, latitude, radius) => {
-        return this._model.find({
-            location: {
-                $geoWithin: {
-                    $centerSphere: [
-                        [longitude, latitude],
-                        radius
-                    ]
-                }
-
-            }
-        });
-    }
+  getBootcampWithInRadius = (longitude, latitude, radius) => {
+    return this.#model.find({
+      location: {
+        $geoWithin: {
+          $centerSphere: [[longitude, latitude], radius],
+        },
+      },
+    });
+  };
 }
 
 module.exports = BootcampService;

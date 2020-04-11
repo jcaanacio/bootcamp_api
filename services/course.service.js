@@ -1,19 +1,20 @@
-const Service = require('../services/Service');
+const Service = require("../services/Service");
 class CourseService extends Service {
-    constructor (model, bootcampService) {
-        super(model);
-        this._bootcampService = bootcampService;
+  #bootcampService;
+  constructor(model, bootcampService) {
+    super(model);
+    this.#bootcampService = bootcampService;
+  }
+
+  createCourse = async (model) => {
+    const bootcamp = await this.#bootcampService.getById(model.bootcamp);
+
+    if (!bootcamp) {
+      return undefined;
     }
 
-    createCourse = async (model) => {
-        const bootcamp = await this._bootcampService.getById(model.bootcamp);
-        
-        if (!bootcamp) {
-            return undefined;
-        }
-
-        return await this.create(model);
-    }
+    return await this.create(model);
+  };
 }
 
 module.exports = CourseService;

@@ -1,36 +1,35 @@
 class Service {
+  #model;
+  constructor(model) {
+    this.#model = model;
+  }
 
-    constructor (model) {
-        this._model = model;
-    }
+  getAll = (parameters) => {
+    return this.#model.find(parameters);
+  };
 
-    getAll = (parameters) => {
-        return this._model.find(parameters);
-    }
+  getById = (id) => {
+    return this.#model.findById(id);
+  };
 
-    getById = (id) => {
-        return this._model.findById(id);
-    }
+  create = (model) => {
+    return this.#model.create(model);
+  };
 
-    create = (model) => {
-        return this._model.create(model);
-    }
+  updateById = (id, model) => {
+    return this.#model.findByIdAndUpdate(id, model, {
+      new: true,
+      runValidators: true,
+    });
+  };
 
-    updateById = (id, model) => {
-        return this._model.findByIdAndUpdate(id, model, {
-            new: true,
-            runValidators: true
-        });
-    }
+  deleteById = (id) => {
+    return this.#model.findByIdAndDelete(id);
+  };
 
-    deleteById = (id) => {
-        return this._model.findByIdAndDelete(id);
-    }
-
-    countDocuments = () => {
-        return this._model.countDocuments();
-    }
-    
+  countDocuments = () => {
+    return this.#model.countDocuments();
+  };
 }
 
 module.exports = Service;
