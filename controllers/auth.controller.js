@@ -21,6 +21,7 @@ class AuthController extends Controller {
       success: true,
       message: "User registered",
       body: user,
+      token: user.getSignedJwtToken(),
     });
   });
 
