@@ -10,37 +10,21 @@ class BootcampController extends Controller {
     this.#bootcampService = bootcampService;
   }
 
+  /**
+   * @description Get bootcamps
+   * @route  GET/api/v1/bootcamps
+   * @route  GET/api/v1/courses/:bootcampId/
+   * @access Public
+   */
   get = AsyncHandler(async (request, response, next) => {
-    // const bootcamps = await this.#bootcampService.getAllBootcamps(request.query);
-    const query = this.parseQueryOperators({ ...request.query });
-    const filterFields = this.selectFields(request.query.select);
-
-    let bootcamps = this.#bootcampService.getAll(query);
-    bootcamps = bootcamps.populate({
-      path: "courses",
-      select: "title description",
-    });
-    bootcamps = bootcamps.select(filterFields);
-    bootcamps = bootcamps.sort(this.orderBy(request.query.sort));
-
-    const totalDocuments = await this.#bootcampService.countDocuments();
-    const pagination = this.pagination(
-      request.query.pageIndex,
-      request.query.limit,
-      totalDocuments
-    );
-    bootcamps = bootcamps.skip(pagination.startIndex).limit(pagination.limit);
-    bootcamps = await bootcamps;
-
-    response.status(200).json({
-      success: true,
-      message: `List of bootcamps`,
-      count: bootcamps.length,
-      pagination: pagination,
-      body: bootcamps,
-    });
+    response.status(200).json(response.advancedResults);
   });
 
+  /**
+   * @description Get bootcamp by id
+   * @route GET/api/v1/bootcamps/:id
+   * @access Public
+   */
   getById = AsyncHandler(async (request, response, next) => {
     let query = this.#bootcampService.getById(request.params.id);
     query = query.populate({ path: "courses", select: "title description" });
@@ -61,6 +45,11 @@ class BootcampController extends Controller {
     });
   });
 
+  /**
+   * @description Create Bootcamp
+   * @route POST/api/v1/bootcamps
+   * @access Private
+   */
   create = AsyncHandler(async (request, response, next) => {
     const bootcamp = await this.#bootcampService.create(request.body);
     response.status(200).json({
@@ -70,11 +59,17 @@ class BootcampController extends Controller {
     });
   });
 
+  /**
+   * @description Update bootcamp by id
+   * @route PUT/api/v1/bootcamps/:id
+   * @access Private
+   */
   updateById = AsyncHandler(async (request, response, next) => {
     const bootcamp = await this.#bootcampService.updateById(
       request.params.id,
       request.body
     );
+
     if (!bootcamp) {
       return response.status(400).json({ sucess: false, body: bootcamp });
     }
@@ -86,8 +81,14 @@ class BootcampController extends Controller {
     });
   });
 
+  /**
+   * @description Delete bootcamp by id
+   * @route DELETE/api/v1/bootcamps/:id
+   * @access Private
+   */
   deleteById = AsyncHandler(async (request, response, next) => {
     const bootcamp = await this.#bootcampService.getById(request.params.id);
+
     if (!bootcamp) {
       return next(
         new ErrorResponse(
@@ -106,6 +107,11 @@ class BootcampController extends Controller {
     });
   });
 
+  /**
+   * @description Get bootcamps with in radius
+   * @route GET/api/v1/bootcamps/radius/:zipcode/:distance
+   * @access Public
+   */
   getWithInRadius = AsyncHandler(async (request, response, next) => {
     const { zipcode, distance } = request.params;
     /**
@@ -139,7 +145,6 @@ class BootcampController extends Controller {
    * @route Put /api/v1/bootcamps/:id/photo
    * @access Private
    */
-
   photoUpload = AsyncHandler(async (request, response, next) => {
     const bootcamp = await this.#bootcampService.getById(request.params.id);
 

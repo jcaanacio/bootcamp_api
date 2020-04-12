@@ -18,16 +18,23 @@ class CourseController extends Controller {
     let query;
     const bootcampId = request.query.bootcampId || request.params.bootcampId;
 
-    if (bootcampId) {
-      query = this.#courseService.getAll({ bootcamp: bootcampId });
-    } else {
-      query = this.#courseService.getAll();
+    if (!bootcampId) {
+      return response.status(200).json(response.advancedResults);
     }
 
-    query.populate({ path: "bootcamp", select: "name description" });
-    const courses = await query;
+    const courses = await this.#courseService.getAll({
+      bootcamp: bootcampId,
+    });
 
-    response.status(200).json({
+    if (!courses) {
+      return next(
+        new ErrorResponse(
+          `No Courses found under the bootcamp id of ${bootcampId}`
+        )
+      );
+    }
+
+    return response.status(200).json({
       success: true,
       message: `List of courses`,
       count: courses.length,

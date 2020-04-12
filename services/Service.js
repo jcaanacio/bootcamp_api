@@ -30,6 +30,10 @@ class Service {
   countDocuments = () => {
     return this.#model.countDocuments();
   };
+
+  getModelName = () => {
+    return this.#model.collection.collectionName;
+  };
 }
 
 module.exports = Service;

@@ -5,6 +5,7 @@ const BootcampModel = require("./../models/Bootcamp.model");
 const BootcampService = require("../services/bootcamp.service");
 const bootcampService = new BootcampService(BootcampModel);
 const bootcampController = new BootcampController(bootcampService);
+const advanceResults = require("../middleware/advancedRequestResult");
 /**
  * Include other resource routers
  */
@@ -20,11 +21,14 @@ router
 
 router.route("/:id/photo").put(bootcampController.photoUpload);
 
-router.route("/").get(bootcampController.get).post(bootcampController.create);
+router
+  .route("/")
+  .get(advanceResults(bootcampService, "courses"), bootcampController.get)
+  .post(bootcampController.create);
 
 router
   .route("/:id")
-  .get(bootcampController.getById)
+  .get(advanceResults(bootcampService), bootcampController.getById)
   .delete(bootcampController.deleteById)
   .put(bootcampController.updateById);
 
