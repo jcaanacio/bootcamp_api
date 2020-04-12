@@ -34,6 +34,10 @@ class Service {
   getModelName = () => {
     return this.#model.collection.collectionName;
   };
+
+  getOne = (model) => {
+    return this.#model.findOne(model);
+  };
 }
 
 module.exports = Service;

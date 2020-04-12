@@ -19,6 +19,18 @@ class UserService extends Service {
 
     return await user;
   };
+
+  login = async (email, password) => {
+    //check user
+    const model = { email: email };
+    const user = await this.getOne(model).select("+password");
+    const isMatch = await user.matchPassword(password);
+    if (!user || !isMatch) {
+      return false;
+    }
+
+    return user;
+  };
 }
 
 module.exports = UserService;
