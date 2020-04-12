@@ -15,8 +15,21 @@ class AuthController extends Controller {
    * @access Public
    */
   register = AsyncHandler(async (request, response, next) => {
+    const user = await this.#userService.register(request);
+
     response.status(200).json({
       success: true,
+      message: "User registered",
+      body: user,
+    });
+  });
+
+  getAll = AsyncHandler(async (request, response, next) => {
+    const users = await this.#userService.getAll(request.params);
+
+    response.status(200).json({
+      success: true,
+      body: users,
     });
   });
 }

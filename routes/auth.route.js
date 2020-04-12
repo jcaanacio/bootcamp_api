@@ -8,5 +8,5 @@ const userService = new UserService(userModel);
 const authController = new AuthController(userService);
 
 router.post("/register", authController.register);
-
+router.get("/", authController.getAll);
 module.exports = router;

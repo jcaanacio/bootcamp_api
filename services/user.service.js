@@ -6,6 +6,19 @@ class UserService extends Service {
     super(userModel);
     this.#model = userModel;
   }
+
+  register = async (request) => {
+    const { name, email, password, role } = request.body;
+
+    const user = this.#model.create({
+      name,
+      email,
+      password,
+      role,
+    });
+
+    return await user;
+  };
 }
 
 module.exports = UserService;
