@@ -41,7 +41,8 @@ class AuthController extends Controller {
 
   /**
    * @description Login a user
-   * @route
+   * @route /api/v1/auth/login
+   * @access Public
    */
   login = AsyncHandler(async (request, response, next) => {
     const { email, password } = request.body;
@@ -57,14 +58,32 @@ class AuthController extends Controller {
       return next(new ErrorResponse("Invalid credentials", 401));
     }
 
-    //create token
-    const token = user.getSignedJwtToken();
+    return this.#sendTokenResponse(user, 200, response);
+  });
 
-    response.status(200).json({
+  /**
+   * @description Private method send token response
+   * @route N/A
+   */
+  #sendTokenResponse = (user, statusCode, response) => {
+    const token = user.getSignedJwtToken();
+    const options = {
+      expires: new Date(
+        Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+      ),
+      httpOnly: true,
+    };
+
+    if (process.env.NODE_ENV === "production") {
+      options.secure = true;
+    }
+
+    response.status(statusCode).cookie("token", token, options).json({
       success: true,
+      body: user,
       token,
     });
-  });
+  };
 }
 
 module.exports = AuthController;

@@ -6,6 +6,7 @@ const BootcampModel = require("./../models/Bootcamp.model");
 const BootcampService = require("./../services/bootcamp.service");
 const CourseService = require("../services/course.service");
 const advanceResults = require("../middleware/advancedRequestResult");
+const protect = require("../middleware/auth");
 
 const bootcampService = new BootcampService(BootcampModel);
 const courseService = new CourseService(CourseModel, bootcampService);
@@ -20,12 +21,12 @@ router
     }),
     courseController.get
   )
-  .post(courseController.create);
+  .post(protect, courseController.create);
 
 router
   .route("/:id")
   .get(courseController.getById)
-  .delete(courseController.deleteById)
-  .put(courseController.updateById);
+  .delete(protect, courseController.deleteById)
+  .put(protect, courseController.updateById);
 
 module.exports = router;
