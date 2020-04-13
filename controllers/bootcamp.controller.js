@@ -51,7 +51,15 @@ class BootcampController extends Controller {
    * @access Private
    */
   create = AsyncHandler(async (request, response, next) => {
-    const bootcamp = await this.#bootcampService.create(request.body);
+    const bootcamp = await this.#bootcampService.createBootcamp(request);
+    if (!bootcamp) {
+      return next(
+        new ErrorResponse(
+          `The user ${request.user.email} has already published a bootcamp`,
+          400
+        )
+      );
+    }
     response.status(200).json({
       success: true,
       message: `Created new bootcamp`,
