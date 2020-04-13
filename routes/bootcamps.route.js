@@ -24,17 +24,35 @@ router
   .route("/radius/:zipcode/:distance")
   .get(bootcampController.getWithInRadius);
 
-router.route("/:id/photo").put(bootcampController.photoUpload);
+router
+  .route("/:id/photo")
+  .put(
+    auth.protect,
+    auth.authorize("publisher", "admin"),
+    bootcampController.photoUpload
+  );
 
 router
   .route("/")
   .get(advanceResults(bootcampService, "courses"), bootcampController.get)
-  .post(auth.protect, bootcampController.create);
+  .post(
+    auth.protect,
+    auth.authorize("publisher", "admin"),
+    bootcampController.create
+  );
 
 router
   .route("/:id")
   .get(advanceResults(bootcampService), bootcampController.getById)
-  .delete(auth.protect, bootcampController.deleteById)
-  .put(auth.protect, bootcampController.updateById);
+  .delete(
+    auth.protect,
+    auth.authorize("publisher", "admin"),
+    bootcampController.deleteById
+  )
+  .put(
+    auth.protect,
+    auth.authorize("publisher", "admin"),
+    bootcampController.updateById
+  );
 
 module.exports = router;
