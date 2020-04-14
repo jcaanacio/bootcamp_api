@@ -73,19 +73,36 @@ class BootcampController extends Controller {
    * @access Private
    */
   updateById = AsyncHandler(async (request, response, next) => {
-    const bootcamp = await this.#bootcampService.updateById(
+    const bootcamp = await this.#bootcampService.getById(request.params.id);
+
+    if (!bootcamp) {
+      return next(
+        new ErrorResponse(
+          `Bootcamp not found with the Id of ${request.params.id}`
+        )
+      );
+    }
+
+    if (
+      bootcamp.user.toString() !== request.user.id &&
+      request.user.role !== "admin"
+    ) {
+      return next(
+        new ErrorResponse(
+          `User ${request.user.email} is not authorized to update this bootcamp `
+        )
+      );
+    }
+
+    const updatedBootcamp = await this.#bootcampService.updateById(
       request.params.id,
       request.body
     );
 
-    if (!bootcamp) {
-      return response.status(400).json({ sucess: false, body: bootcamp });
-    }
-
     response.status(200).json({
       success: true,
       message: `Updated Bootcamp ${request.params.id}`,
-      body: bootcamp,
+      body: updatedBootcamp,
     });
   });
 

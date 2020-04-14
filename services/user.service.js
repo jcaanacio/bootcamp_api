@@ -24,8 +24,13 @@ class UserService extends Service {
     //check user
     const model = { email: email };
     const user = await this.getOne(model).select("+password");
+
+    if (!user) {
+      return false;
+    }
+
     const isMatch = await user.matchPassword(password);
-    if (!user || !isMatch) {
+    if (!isMatch) {
       return false;
     }
 
