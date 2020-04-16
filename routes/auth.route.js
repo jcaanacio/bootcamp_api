@@ -9,5 +9,6 @@ const authController = new AuthController(userService);
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);
+router.post("/forgotPassword", authController.forgotPassword);
 router.get("/", authController.getAll);
 module.exports = router;

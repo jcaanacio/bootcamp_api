@@ -36,6 +36,16 @@ class UserService extends Service {
 
     return user;
   };
+
+  forgotPassword = async (email) => {
+    const user = await this.getOne({ email });
+
+    if (!user) {
+      throw { message: `There is no user ${email}`, statusCode: 404 };
+    }
+    user.getResetPasswordToken();
+    return user.save();
+  };
 }
 
 module.exports = UserService;

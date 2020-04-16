@@ -62,6 +62,22 @@ class AuthController extends Controller {
   });
 
   /**
+   * @description Forgot password
+   * @route POST/api/v1/auth/forgotPassword
+   * @access Public
+   */
+  forgotPassword = AsyncHandler(async (request, response, next) => {
+    const resetToken = await this.#userService.forgotPassword(
+      request.body.email
+    );
+
+    return response.status(200).json({
+      success: true,
+      resetToken,
+    });
+  });
+
+  /**
    * @description Private method send token response
    * @route N/A
    */
