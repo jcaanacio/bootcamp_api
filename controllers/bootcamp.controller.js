@@ -145,25 +145,7 @@ class BootcampController extends Controller {
       );
     }
 
-    const bootcamp = await this.#bootcampService.validateBootcampOwner(request);
-
-    if (bootcamp === null) {
-      return next(
-        new ErrorResponse(
-          `Bootcamp not found with id of ${request.params.id}`,
-          404
-        )
-      );
-    }
-
-    if (!bootcamp) {
-      return next(
-        new ErrorResponse(
-          `User ${request.user.email} is not authorized to delete this bootcamp `
-        )
-      );
-    }
-
+    const bootcamp = await this.#bootcampService.validateOwnerBootcamp(request);
     //Create custome filname
     file.name = `photo_${bootcamp._id}${path.parse(file.name).ext}`;
     file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
