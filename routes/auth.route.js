@@ -3,9 +3,10 @@ const router = express.Router();
 const userModel = require("../models/Users.model");
 const UserService = require("../services/user.service");
 const AuthController = require("../controllers/auth.controller");
+const emailService = require("../utils/sendemail");
 
 const userService = new UserService(userModel);
-const authController = new AuthController(userService);
+const authController = new AuthController(userService, emailService);
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);

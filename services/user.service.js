@@ -46,6 +46,12 @@ class UserService extends Service {
     user.getResetPasswordToken();
     return user.save();
   };
+
+  rollBackForgotPassword = async (user) => {
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    return await user.save({ validateBeforeSave: false });
+  };
 }
 
 module.exports = UserService;

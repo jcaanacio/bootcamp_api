@@ -4,9 +4,11 @@ const Controller = require("../utils/Controller");
 
 class AuthController extends Controller {
   #userService;
-  constructor(userService) {
+  #emailService;
+  constructor(userService, emailService) {
     super();
     this.#userService = userService;
+    this.#emailService = emailService;
   }
 
   /**
@@ -67,14 +69,37 @@ class AuthController extends Controller {
    * @access Public
    */
   forgotPassword = AsyncHandler(async (request, response, next) => {
-    const resetToken = await this.#userService.forgotPassword(
-      request.body.email
-    );
+    const user = await this.#userService.forgotPassword(request.body.email);
 
-    return response.status(200).json({
-      success: true,
-      resetToken,
-    });
+    const resetUrl = `${request.protocol}://${request.get(
+      "host"
+    )}/api/v1/resetpassword/${user.resetPasswordToken}`;
+
+    const message = `You're receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\ ${resetUrl}`;
+
+    const email = {
+      email: user.email,
+      subject: "Password reset",
+      message: message,
+    };
+
+    try {
+      await this.#emailService(email);
+      return response.status(200).json({
+        success: true,
+        data: `Email sent`,
+      });
+    } catch (error) {
+      console.log(error);
+      const rollBackForgotPasswordUser = await this.#userService.rollBackForgotPassword(
+        user
+      );
+
+      throw {
+        message: error.message,
+        statusCode: 500,
+      };
+    }
   });
 
   /**
