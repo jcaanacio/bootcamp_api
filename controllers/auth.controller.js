@@ -1,4 +1,3 @@
-const ErrorResponse = require("../utils/ErrorResponse");
 const AsyncHandler = require("../middleware/asyncHandler");
 const Controller = require("../utils/Controller");
 
@@ -50,16 +49,10 @@ class AuthController extends Controller {
     const { email, password } = request.body;
     //check body parameters
     if (!email || !password) {
-      return next(new ErrorResponse(`Please provide an email & password`, 400));
+      throw { message: `Please provide an email & password`, statusCode: 400 };
     }
 
     const user = await this.#userService.login(email, password);
-
-    //Check if user exist or password is match
-    if (!user) {
-      return next(new ErrorResponse("Invalid credentials", 401));
-    }
-
     return this.#sendTokenResponse(user, 200, response);
   });
 

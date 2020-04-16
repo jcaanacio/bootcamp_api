@@ -1,5 +1,4 @@
 const AsyncHandler = require("../middleware/asyncHandler");
-const ErrorResponse = require("../utils/ErrorResponse");
 const Controller = require("../utils/Controller");
 class CourseController extends Controller {
   #courseService;
@@ -27,11 +26,10 @@ class CourseController extends Controller {
     });
 
     if (!courses) {
-      return next(
-        new ErrorResponse(
-          `No Courses found under the bootcamp id of ${bootcampId}`
-        )
-      );
+      throw {
+        message: `No Courses found under the bootcamp id of ${bootcampId}`,
+        statusCode: 404,
+      };
     }
 
     return response.status(200).json({
@@ -54,12 +52,10 @@ class CourseController extends Controller {
     const courses = await query;
 
     if (!courses) {
-      return next(
-        new ErrorResponse(
-          `Course not found with the id of ${request.params.id}`,
-          404
-        )
-      );
+      throw {
+        message: `Course not found with the id of ${request.params.id}`,
+        statusCode: 404,
+      };
     }
 
     response.status(200).json({

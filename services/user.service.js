@@ -26,12 +26,12 @@ class UserService extends Service {
     const user = await this.getOne(model).select("+password");
 
     if (!user) {
-      return false;
+      throw { message: `Invalid Credentials`, statusCode: 401 };
     }
 
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
-      return false;
+      throw { message: `Invalid Credentials`, statusCode: 401 };
     }
 
     return user;

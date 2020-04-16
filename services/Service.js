@@ -35,8 +35,8 @@ class Service {
     return this.#model.collection.collectionName;
   };
 
-  getOne = async (model) => {
-    return await this.#model.findOne(model);
+  getOne = (model) => {
+    return this.#model.findOne(model);
   };
 }
 
