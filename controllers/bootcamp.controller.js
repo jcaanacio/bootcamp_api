@@ -52,14 +52,6 @@ class BootcampController extends Controller {
    */
   create = AsyncHandler(async (request, response, next) => {
     const bootcamp = await this.#bootcampService.createBootcamp(request);
-    if (!bootcamp) {
-      return next(
-        new ErrorResponse(
-          `The user ${request.user.email} has already published a bootcamp`,
-          400
-        )
-      );
-    }
     response.status(200).json({
       success: true,
       message: `Created new bootcamp`,
@@ -73,32 +65,7 @@ class BootcampController extends Controller {
    * @access Private
    */
   updateById = AsyncHandler(async (request, response, next) => {
-    const bootcamp = await this.#bootcampService.getById(request.params.id);
-
-    if (!bootcamp) {
-      return next(
-        new ErrorResponse(
-          `Bootcamp not found with the Id of ${request.params.id}`
-        )
-      );
-    }
-
-    if (
-      bootcamp.user.toString() !== request.user.id &&
-      request.user.role !== "admin"
-    ) {
-      return next(
-        new ErrorResponse(
-          `User ${request.user.email} is not authorized to update this bootcamp `
-        )
-      );
-    }
-
-    const updatedBootcamp = await this.#bootcampService.updateById(
-      request.params.id,
-      request.body
-    );
-
+    const updatedBootcamp = await this.#bootcampService.updateBootcamp(request);
     response.status(200).json({
       success: true,
       message: `Updated Bootcamp ${request.params.id}`,
@@ -112,19 +79,7 @@ class BootcampController extends Controller {
    * @access Private
    */
   deleteById = AsyncHandler(async (request, response, next) => {
-    const bootcamp = await this.#bootcampService.getById(request.params.id);
-
-    if (!bootcamp) {
-      return next(
-        new ErrorResponse(
-          `Bootcamp not found with the id of ${request.params.id}`,
-          404
-        )
-      );
-    }
-
-    bootcamp.remove();
-
+    const bootcamp = await this.#bootcampService.deleteBootcamp(request);
     return response.status(200).json({
       success: true,
       message: `Deleted Bootcamp ${request.params.id}`,
@@ -171,17 +126,6 @@ class BootcampController extends Controller {
    * @access Private
    */
   photoUpload = AsyncHandler(async (request, response, next) => {
-    const bootcamp = await this.#bootcampService.getById(request.params.id);
-
-    if (!bootcamp) {
-      return next(
-        new ErrorResponse(
-          `Bootcamp not found with id of ${request.params.id}`,
-          404
-        )
-      );
-    }
-
     if (!request.files) {
       return next(new ErrorResponse(`Please upload a file`, 400));
     }
@@ -197,6 +141,25 @@ class BootcampController extends Controller {
         new ErrorResponse(
           `Please upload an image less than ${process.env.MAX_FILE_UPLOAD}`,
           400
+        )
+      );
+    }
+
+    const bootcamp = await this.#bootcampService.validateBootcampOwner(request);
+
+    if (bootcamp === null) {
+      return next(
+        new ErrorResponse(
+          `Bootcamp not found with id of ${request.params.id}`,
+          404
+        )
+      );
+    }
+
+    if (!bootcamp) {
+      return next(
+        new ErrorResponse(
+          `User ${request.user.email} is not authorized to delete this bootcamp `
         )
       );
     }
