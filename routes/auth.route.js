@@ -8,6 +8,7 @@ const emailService = require("../utils/sendemail");
 const userService = new UserService(userModel);
 const authController = new AuthController(userService, emailService);
 
+router.put("/resetpassword/:resettoken", authController.resetPassword);
 router.post("/register", authController.register);
 router.post("/login", authController.login);
 router.post("/forgotPassword", authController.forgotPassword);

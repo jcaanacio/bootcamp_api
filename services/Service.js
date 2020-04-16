@@ -38,6 +38,10 @@ class Service {
   getOne = (model) => {
     return this.#model.findOne(model);
   };
+
+  debug = () => {
+    return this.#model;
+  };
 }
 
 module.exports = Service;

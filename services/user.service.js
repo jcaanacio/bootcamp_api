@@ -43,14 +43,14 @@ class UserService extends Service {
     if (!user) {
       throw { message: `There is no user ${email}`, statusCode: 404 };
     }
-    user.getResetPasswordToken();
-    return user.save();
+
+    return user;
   };
 
   rollBackForgotPassword = async (user) => {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
-    return await user.save({ validateBeforeSave: false });
+    return await user.save({ validateBeforeSave: true });
   };
 }
 

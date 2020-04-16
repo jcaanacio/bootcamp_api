@@ -1,5 +1,6 @@
 const AsyncHandler = require("../middleware/asyncHandler");
 const Controller = require("../utils/Controller");
+const crypo = require("crypto");
 
 class AuthController extends Controller {
   #userService;
@@ -63,10 +64,12 @@ class AuthController extends Controller {
    */
   forgotPassword = AsyncHandler(async (request, response, next) => {
     const user = await this.#userService.forgotPassword(request.body.email);
+    const token = user.getResetPasswordToken();
+    user.save();
 
     const resetUrl = `${request.protocol}://${request.get(
       "host"
-    )}/api/v1/resetpassword/${user.resetPasswordToken}`;
+    )}/api/v1/auth/resetpassword/${token}`;
 
     const message = `You're receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\ ${resetUrl}`;
 
@@ -93,6 +96,36 @@ class AuthController extends Controller {
         statusCode: 500,
       };
     }
+  });
+
+  /**
+   * @description Reset Password
+   * @route PUT/api/v1/auth/resetpassword/:resettoken
+   */
+  resetPassword = AsyncHandler(async (request, response, next) => {
+    const token = crypo
+      .createHash("sha256")
+      .update(request.params.resettoken)
+      .digest("hex");
+
+    const query = {
+      resetPasswordToken: token,
+      resetPasswordExpire: { $gt: Date.now() },
+    };
+
+    const user = await this.#userService.getOne(query);
+
+    if (!user) {
+      throw { message: `Invalid token`, statusCode: 400 };
+    }
+
+    // Set the new password
+    user.password = request.body.password;
+    const updatedUserPassword = await this.#userService.rollBackForgotPassword(
+      user
+    );
+
+    return this.#sendTokenResponse(updatedUserPassword, 200, response);
   });
 
   /**
