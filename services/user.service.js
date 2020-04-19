@@ -52,6 +52,56 @@ class UserService extends Service {
     user.resetPasswordExpire = undefined;
     return await user.save({ validateBeforeSave: true });
   };
+
+  updateUserDetails = async (id, user) => {
+    if (!user.email) {
+      throw { message: `Must enter a user's email`, statusCode: 401 };
+    }
+
+    const mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (!user.email.match(mailFormat)) {
+      throw { message: `Must enter a valid user's email`, statusCode: 401 };
+    }
+
+    if (!user.name) {
+      throw { message: `Must enter a user's name`, statusCode: 401 };
+    }
+
+    const userToUpdate = await this.getById(id);
+
+    if (!userToUpdate) {
+      throw { message: `User not found with the id of ${id}`, statusCode: 404 };
+    }
+
+    return await this.updateById(id, user);
+  };
+
+  deleteUser = async (id) => {
+    if (!id) {
+      throw { message: `Must enter a user's id`, statusCode: 401 };
+    }
+
+    const user = await this.getById(id);
+
+    if (!user) {
+      throw { message: `User not found with the id of ${id}`, statusCode: 404 };
+    }
+
+    return await user.remove();
+  };
+
+  getUserById = async (id) => {
+    if (!id) {
+      throw { message: `Must enter a user's id`, statusCode: 401 };
+    }
+
+    const user = await this.getById(id);
+    if (!user) {
+      throw { message: `User not found with the id of ${id}`, statusCode: 404 };
+    }
+
+    return user;
+  };
 }
 
 module.exports = UserService;
