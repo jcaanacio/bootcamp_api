@@ -12,10 +12,17 @@ const advanceResults = require("../middleware/advancedRequestResult");
 router
   .route("/:id")
   .get(userController.getUserById)
-  .delete(userController.deleteUser);
+  .put(userController.updateUserById)
+  .delete(userController.deleteUserById);
 
 router
   .route("/")
-  .get(advanceResults(userService, "bootcamp"), userController.getAllUsers);
+  .get(
+    auth.protect,
+    auth.authorize("admin"),
+    advanceResults(userService, "bootcamp"),
+    userController.getAllUsers
+  )
+  .post(userController.createUser);
 
 module.exports = router;
