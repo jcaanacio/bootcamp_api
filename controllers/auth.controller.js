@@ -17,13 +17,15 @@ class AuthController extends TokenController {
    * @access Public
    */
   register = AsyncHandler(async (request, response, next) => {
-    const user = await this.#userService.register(request);
+    const { name, email, password, role } = request.body;
+    const user = { name, email, password, role };
+    const registeredUser = await this.#userService.register(user);
 
     response.status(200).json({
       success: true,
       message: "User registered",
-      body: user,
-      token: user.getSignedJwtToken(),
+      body: registeredUser,
+      token: registeredUser.getSignedJwtToken(),
     });
   });
 

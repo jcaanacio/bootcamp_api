@@ -7,19 +7,26 @@ class UserService extends Service {
     this.#model = userModel;
   }
 
-  register = async (request) => {
-    const { name, email, password, role } = request.body;
-
-    const user = this.#model.create({
+  /**
+   * @params User Object
+   * @return User Object
+   */
+  register = async (user) => {
+    const { name, email, password, role } = user;
+    const newUser = this.#model.create({
       name,
       email,
       password,
       role,
     });
 
-    return await user;
+    return await newUser;
   };
 
+  /**
+   * @params email, password
+   * @return User Object
+   */
   login = async (email, password) => {
     //check user
     const model = { email: email };
@@ -37,6 +44,10 @@ class UserService extends Service {
     return user;
   };
 
+  /**
+   * @params email
+   * @return User Object
+   */
   forgotPassword = async (email) => {
     const user = await this.getOne({ email });
 
@@ -47,12 +58,19 @@ class UserService extends Service {
     return user;
   };
 
+  /**
+   * @params User Object
+   * @return User Object
+   */
   rollBackForgotPassword = async (user) => {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     return await user.save({ validateBeforeSave: true });
   };
 
+  /**
+   * @params id, user object
+   */
   updateUserDetails = async (id, user) => {
     if (!id) {
       throw { message: `Must login a user`, statusCode: 401 };
@@ -80,6 +98,9 @@ class UserService extends Service {
     return await this.updateById(id, user);
   };
 
+  /**
+   * @params Id, current password, new password
+   */
   updateUserPassword = async (id, currentPassword, newPassword) => {
     if (!id) {
       throw { message: `User must have an Id`, statusCode: 401 };
@@ -114,6 +135,10 @@ class UserService extends Service {
     return await user.save();
   };
 
+  /**
+   * @params id
+   * @return User Object
+   */
   deleteUser = async (id) => {
     if (!id) {
       throw { message: `Must enter a user's id`, statusCode: 401 };
@@ -128,6 +153,10 @@ class UserService extends Service {
     return await user.remove();
   };
 
+  /**
+   * @params id
+   * @return User object
+   */
   getUserById = async (id) => {
     if (!id) {
       throw { message: `Must enter a user's id`, statusCode: 401 };
