@@ -15,6 +15,7 @@ dotenv.config({ path: "./config/index.env" });
 
 const Bootcamp = require("./models/Bootcamp.model");
 const Course = require("./models/Course.model");
+const Users = require("./models/Users.model");
 
 /**
  * Connect to DB
@@ -33,6 +34,10 @@ const courses = JSON.parse(
   fs.readFileSync(`${__dirname}/_data/courses.json`, "utf-8")
 );
 
+const users = JSON.parse(
+  fs.readFileSync(`${__dirname}/_data/users.json`, "utf-8")
+);
+
 /**
  * Import into DB
  */
@@ -41,6 +46,7 @@ const importData = async () => {
   try {
     await Bootcamp.create(bootcamps);
     await Course.create(courses);
+    await Users.create(users);
     console.log(`Data Imported`.green.inverse);
     process.exit();
   } catch (error) {
@@ -52,6 +58,7 @@ const destroyData = async () => {
   try {
     await Bootcamp.deleteMany();
     await Course.deleteMany();
+    await Users.deleteMany();
     console.log(`Data Destroyed`.red.inverse);
     process.exit();
   } catch (error) {
@@ -59,8 +66,27 @@ const destroyData = async () => {
   }
 };
 
-if (process.argv[2] === "-i") {
+const destroyUsers = async () => {
+  try {
+    await Users.deleteMany();
+    console.log(`Users Data Destroyed`.red.inverse);
+    process.exit();
+  } catch (error) {
+    console.log(`Error: ${error}`.red);
+  }
+};
+
+const command = process.argv[2];
+const entity = process.argv[3];
+
+if (command === "-d" && entity === "-users") {
+  destroyUsers();
+}
+
+if (command === "-i") {
   importData();
-} else if (process.argv[2] === "-d") {
+}
+
+if (command === "-d") {
   destroyData();
 }

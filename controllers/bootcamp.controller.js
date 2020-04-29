@@ -1,4 +1,3 @@
-const ErrorResponse = require("../utils/ErrorResponse");
 const AsyncHandler = require("../middleware/asyncHandler");
 const geocoder = require("../utils/GeoCoder");
 const Controller = require("../utils/Controller");
@@ -29,12 +28,10 @@ class BootcampController extends Controller {
     let query = this.#bootcampService.getById(request.params.id);
     query = query.populate({ path: "courses", select: "title description" });
     if (!query) {
-      return next(
-        new ErrorResponse(
-          `Bootcamp not found with the id of ${request.params.id}`,
-          404
-        )
-      );
+      throw {
+        message: `Bootcamp not found with the id of ${request.params.id}`,
+        statusCode: 404,
+      };
     }
 
     const bootcamp = await query;
@@ -51,7 +48,7 @@ class BootcampController extends Controller {
    * @access Private
    */
   create = AsyncHandler(async (request, response, next) => {
-    const bootcamp = await this.#bootcampService.create(request.body);
+    const bootcamp = await this.#bootcampService.createBootcamp(request);
     response.status(200).json({
       success: true,
       message: `Created new bootcamp`,
@@ -65,19 +62,11 @@ class BootcampController extends Controller {
    * @access Private
    */
   updateById = AsyncHandler(async (request, response, next) => {
-    const bootcamp = await this.#bootcampService.updateById(
-      request.params.id,
-      request.body
-    );
-
-    if (!bootcamp) {
-      return response.status(400).json({ sucess: false, body: bootcamp });
-    }
-
+    const updatedBootcamp = await this.#bootcampService.updateBootcamp(request);
     response.status(200).json({
       success: true,
       message: `Updated Bootcamp ${request.params.id}`,
-      body: bootcamp,
+      body: updatedBootcamp,
     });
   });
 
@@ -87,19 +76,7 @@ class BootcampController extends Controller {
    * @access Private
    */
   deleteById = AsyncHandler(async (request, response, next) => {
-    const bootcamp = await this.#bootcampService.getById(request.params.id);
-
-    if (!bootcamp) {
-      return next(
-        new ErrorResponse(
-          `Bootcamp not found with the id of ${request.params.id}`,
-          404
-        )
-      );
-    }
-
-    bootcamp.remove();
-
+    const bootcamp = await this.#bootcampService.deleteBootcamp(request);
     return response.status(200).json({
       success: true,
       message: `Deleted Bootcamp ${request.params.id}`,
@@ -146,44 +123,33 @@ class BootcampController extends Controller {
    * @access Private
    */
   photoUpload = AsyncHandler(async (request, response, next) => {
-    const bootcamp = await this.#bootcampService.getById(request.params.id);
-
-    if (!bootcamp) {
-      return next(
-        new ErrorResponse(
-          `Bootcamp not found with id of ${request.params.id}`,
-          404
-        )
-      );
-    }
-
     if (!request.files) {
-      return next(new ErrorResponse(`Please upload a file`, 400));
+      throw { message: `Please upload a file`, statusCode: 400 };
     }
 
     const file = request.files.file;
 
     if (!file.mimetype.startsWith("image")) {
-      return next(new ErrorResponse("Please upload an image file", 400));
+      throw { message: "Please upload an image file", statusCode: 400 };
     }
 
     if (file.size > process.env.MAX_FILE_UPLOAD) {
-      return next(
-        new ErrorResponse(
-          `Please upload an image less than ${process.env.MAX_FILE_UPLOAD}`,
-          400
-        )
-      );
+      throw {
+        message: `Please upload an image less than ${process.env.MAX_FILE_UPLOAD}`,
+        statusCode: 400,
+      };
     }
 
+    const bootcamp = await this.#bootcampService.validateOwnerBootcamp(request);
     //Create custome filname
     file.name = `photo_${bootcamp._id}${path.parse(file.name).ext}`;
     file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
       if (err) {
         console.log(err);
-        return next(
-          new ErrorResponse(`Problem encountered while uploading photo`, 500)
-        );
+        throw {
+          message: `Problem encountered while uploading photo`,
+          statusCode: 500,
+        };
       }
 
       const photo = {

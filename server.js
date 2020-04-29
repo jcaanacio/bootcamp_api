@@ -2,19 +2,25 @@ const path = require("path");
 const express = require("express");
 const dotenv = require("dotenv");
 const BootcampsRouter = require("../bootcamp_api/routes/bootcamps.route");
-const Courses = require("../bootcamp_api/routes/courses.route");
+const CoursesRouter = require("../bootcamp_api/routes/courses.route");
+const AuthRouter = require("../bootcamp_api/routes/auth.route");
+const UserRouter = require("../bootcamp_api/routes/user.route");
 const Logger = require("./middleware/logger.middleware");
 const Morgan = require("morgan");
 const connectDB = require("./config/db");
 const colors = require("colors");
 const fileupload = require("express-fileupload");
+const cookieParser = require("cookie-parser");
 dotenv.config({ path: "./config/index.env" });
 const app = express();
 const PORT = process.env.PORT || 5000;
 const ErrorHandler = require("./middleware/errorHandler.middleware");
-app.use(express.json());
 
 connectDB();
+
+//body parser
+app.use(express.json());
+app.use(cookieParser());
 
 // app.use(Logger);
 
@@ -29,7 +35,9 @@ app.use(fileupload());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/v1/bootcamps", BootcampsRouter);
-app.use("/api/v1/courses", Courses);
+app.use("/api/v1/courses", CoursesRouter);
+app.use("/api/v1/auth", AuthRouter);
+app.use("/api/v1/users", UserRouter);
 app.use(ErrorHandler);
 const server = app.listen(PORT, () => {
   console.log(
