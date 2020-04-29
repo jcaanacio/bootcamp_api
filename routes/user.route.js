@@ -9,6 +9,9 @@ const userController = new UserController(userService);
 const auth = new Auth(userService);
 const advanceResults = require("../middleware/advancedRequestResult");
 
+router.use(auth.protect);
+router.use(auth.authorize("admin"));
+
 router
   .route("/:id")
   .get(userController.getUserById)
@@ -17,12 +20,7 @@ router
 
 router
   .route("/")
-  .get(
-    auth.protect,
-    auth.authorize("admin"),
-    advanceResults(userService, "bootcamp"),
-    userController.getAllUsers
-  )
+  .get(advanceResults(userService, "bootcamp"), userController.getAllUsers)
   .post(userController.createUser);
 
 module.exports = router;
