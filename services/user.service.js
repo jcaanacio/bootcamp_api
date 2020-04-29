@@ -54,6 +54,10 @@ class UserService extends Service {
   };
 
   updateUserDetails = async (id, user) => {
+    if (!id) {
+      throw { message: `Must login a user`, statusCode: 401 };
+    }
+
     if (!user.email) {
       throw { message: `Must enter a user's email`, statusCode: 401 };
     }
@@ -74,6 +78,40 @@ class UserService extends Service {
     }
 
     return await this.updateById(id, user);
+  };
+
+  updateUserPassword = async (id, currentPassword, newPassword) => {
+    if (!id) {
+      throw { message: `User must have an Id`, statusCode: 401 };
+    }
+
+    if (!currentPassword) {
+      throw {
+        message: `Kindly enter the user's current password`,
+        statusCode: 401,
+      };
+    }
+
+    if (!newPassword) {
+      throw {
+        message: `Kindly enter the user's new password`,
+        statusCode: 401,
+      };
+    }
+
+    let user = await this.getById(id).select("+password");
+
+    if (!user) {
+      throw { message: `User not found with an id of ${id}`, statusCode: 404 };
+    }
+
+    if (!(await user.matchPassword(currentPassword))) {
+      throw { message: `Password is incorrect`, statusCode: 401 };
+    }
+
+    user.password = newPassword;
+
+    return await user.save();
   };
 
   deleteUser = async (id) => {

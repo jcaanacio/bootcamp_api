@@ -1,8 +1,8 @@
 const AsyncHandler = require("../middleware/asyncHandler");
-const Controller = require("../utils/Controller");
 const crypo = require("crypto");
+const TokenController = require("../utils/TokenController");
 
-class AuthController extends Controller {
+class AuthController extends TokenController {
   #userService;
   #emailService;
   constructor(userService, emailService) {
@@ -28,17 +28,14 @@ class AuthController extends Controller {
   });
 
   /**
-   * @description Get all user
+   * @description Get current user
    * @route GET/api/v1/auth/
    * @access Public
    */
-  getAll = AsyncHandler(async (request, response, next) => {
-    const users = await this.#userService.getAll(request.params);
-
-    response.status(200).json({
-      success: true,
-      body: users,
-    });
+  getMe = AsyncHandler(async (request, response, next) => {
+    const { id } = request.user;
+    const user = await this.#userService.getUserById(id);
+    return this.sendTokenResponse(user, 200, response);
   });
 
   /**
@@ -54,7 +51,7 @@ class AuthController extends Controller {
     }
 
     const user = await this.#userService.login(email, password);
-    return this.#sendTokenResponse(user, 200, response);
+    return this.sendTokenResponse(user, 200, response);
   });
 
   /**
@@ -125,32 +122,48 @@ class AuthController extends Controller {
       user
     );
 
-    return this.#sendTokenResponse(updatedUserPassword, 200, response);
+    return this.sendTokenResponse(updatedUserPassword, 200, response);
   });
 
   /**
-   * @description Private method send token response
-   * @route N/A
+   * @description Updates the user's details except the password field
+   * @route PUT /api/v1/auth/:id
+   * @access Private
    */
-  #sendTokenResponse = (user, statusCode, response) => {
-    const token = user.getSignedJwtToken();
-    const options = {
-      expires: new Date(
-        Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-      ),
-      httpOnly: true,
+  updateDetails = AsyncHandler(async (request, response, next) => {
+    const { body } = request;
+    const userModel = {
+      name: body.name,
+      email: body.email,
     };
 
-    if (process.env.NODE_ENV === "production") {
-      options.secure = true;
-    }
+    const user = await this.#userService.updateUserDetails(
+      request.user.id,
+      userModel
+    );
 
-    response.status(statusCode).cookie("token", token, options).json({
+    return response.status(200).json({
       success: true,
+      message: `User updated with the id of ${request.user.id}`,
       body: user,
-      token,
     });
-  };
+  });
+
+  /**
+   * @description Update the password of a user
+   * @route PUT /api/v1/user/updatePassword
+   * @acess Private
+   */
+  updatePassword = AsyncHandler(async (request, response, next) => {
+    const { currentPassword, newPassword } = request.body;
+    const updatedUserPassword = await this.#userService.updateUserPassword(
+      request.user.id,
+      currentPassword,
+      newPassword
+    );
+
+    return this.sendTokenResponse(updatedUserPassword, 200, response);
+  });
 }
 
 module.exports = AuthController;

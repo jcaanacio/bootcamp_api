@@ -1,35 +1,11 @@
 const AsyncHandler = require("../middleware/asyncHandler");
-const Controller = require("../utils/Controller");
-class UserController extends Controller {
+const TokenController = require("../utils/TokenController");
+class UserController extends TokenController {
   #userService;
   constructor(userService) {
     super(userService);
     this.#userService = userService;
   }
-  /**
-   * @description Updates the user's details except the password field
-   * @route PUT /api/v1/user/:id
-   * @access Private
-   */
-  updateDetails = AsyncHandler(async (request, response, next) => {
-    const { body } = request;
-    const userModel = {
-      name: body.name,
-      email: body.email,
-    };
-
-    // const user = await this.#userService.updateById(request.params.id, fields);
-    const user = await this.#userService.updateUserDetails(
-      request.params.id,
-      userModel
-    );
-
-    return response.status(200).json({
-      success: true,
-      message: `User updated with the id of ${request.params.id}`,
-      body: user,
-    });
-  });
 
   /**
    * @description Delete's a single user in the database
