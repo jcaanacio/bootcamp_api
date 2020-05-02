@@ -16,10 +16,12 @@ const auth = new Auth(userService);
  */
 
 const courseRouter = require("./courses.route");
+const reviewRouter = require("./review.route");
 /**
  * Re-route into other reource routers
  */
 router.use("/:bootcampId/courses", courseRouter);
+router.use("/:bootcampId/reviews", reviewRouter);
 router
   .route("/radius/:zipcode/:distance")
   .get(bootcampController.getWithInRadius);

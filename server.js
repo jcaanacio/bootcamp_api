@@ -5,6 +5,7 @@ const BootcampsRouter = require("../bootcamp_api/routes/bootcamps.route");
 const CoursesRouter = require("../bootcamp_api/routes/courses.route");
 const AuthRouter = require("../bootcamp_api/routes/auth.route");
 const UserRouter = require("../bootcamp_api/routes/user.route");
+const ReviewRouter = require("../bootcamp_api/routes/review.route");
 const Logger = require("./middleware/logger.middleware");
 const Morgan = require("morgan");
 const connectDB = require("./config/db");
@@ -38,6 +39,7 @@ app.use("/api/v1/bootcamps", BootcampsRouter);
 app.use("/api/v1/courses", CoursesRouter);
 app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/users", UserRouter);
+app.use("/api/v1/reviews", ReviewRouter);
 app.use(ErrorHandler);
 const server = app.listen(PORT, () => {
   console.log(
