@@ -19,7 +19,6 @@ class Auth {
     //   }
 
     // Make sure token exists
-
     if (!token) {
       return next(new ErrorResponse("Not authorize to access this route", 401));
     }

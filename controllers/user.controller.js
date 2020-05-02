@@ -73,9 +73,8 @@ class UserController extends TokenController {
    */
   updateUserById = AsyncHandler(async (request, response, next) => {
     const { id } = request.params;
-    const { user } = request.body;
-
-    const updatedUser = this.#userService.updateUserDetails(id, user);
+    const user = request.body;
+    const updatedUser = await this.#userService.updateUserDetails(id, user);
 
     response.status(201).json({
       success: true,
