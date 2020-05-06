@@ -83,7 +83,60 @@ class ReviewService extends Service {
     return createdReview;
   };
 
-  updateBootcampReview = async () => {};
+  updateBootcampReview = async (reviewId, review, user) => {
+    if (!reviewId) {
+      throw { message: `Review Id required`, statusCode: 412 };
+    }
+
+    if (!user.id) {
+      throw { message: `User Id required`, statusCode: 412 };
+    }
+
+    const reviewDb = await this.getById(reviewId);
+
+    if (!reviewDb) {
+      throw {
+        message: `Review not found with the Id of ${reviewId}`,
+        statusCode: 404,
+      };
+    }
+
+    this.#validateReviewAuthor(reviewDb, user);
+
+    return await this.updateById(reviewId, review);
+  };
+
+  deleteBootcampReview = async (reviewId, user) => {
+    if (!reviewId) {
+      throw { message: `Review Id required`, statusCode: 412 };
+    }
+
+    if (!user.id) {
+      throw { message: `User Id required`, statusCode: 412 };
+    }
+
+    const review = await this.getById(reviewId);
+
+    if (!review) {
+      throw {
+        message: `Review not found with the id of ${reviewId}`,
+        statusCode: 404,
+      };
+    }
+
+    this.#validateReviewAuthor(review, user);
+
+    return await review.remove();
+  };
+
+  #validateReviewAuthor = (review, user) => {
+    if (review.user.toString() !== user.id && user.role !== "admin") {
+      throw {
+        message: `User not authorized to make changes to this review`,
+        statusCode: 403,
+      };
+    }
+  };
 }
 
 module.exports = ReviewService;

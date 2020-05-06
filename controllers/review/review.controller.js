@@ -52,7 +52,13 @@ class ReviewController {
   updateById = AsyncHandler(async (request, response, next) => {
     const review = request.body;
     const reviewId = request.params.id;
-    const updatedReview = this.#reviewService.updateBootcampReview();
+    const user = request.user;
+
+    const updatedReview = await this.#reviewService.updateBootcampReview(
+      reviewId,
+      review,
+      user
+    );
 
     response.status(200).json({
       success: true,
@@ -66,7 +72,18 @@ class ReviewController {
    * @route DELETE/api/v1/reviews/:id
    * @access Private
    */
-  deleteById = AsyncHandler(async (request, response, next) => {});
+  deleteById = AsyncHandler(async (request, response, next) => {
+    const { id } = request.params;
+    const { user } = request;
+
+    const review = await this.#reviewService.deleteBootcampReview(id, user);
+
+    response.status(200).json({
+      success: true,
+      message: `Successfully deleted review ${review._id}`,
+      body: review,
+    });
+  });
 
   /**
    * @description Create a review for a specific bootcamp
