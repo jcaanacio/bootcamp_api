@@ -5,7 +5,7 @@ const UserService = require("../services/user.service");
 const Auth = require("../middleware/auth");
 const userService = new UserService(userModel);
 const auth = new Auth(userService);
-const advanceResults = require("../middleware/advancedRequestResult");
+const advanceResults = require("../middleware/advanced-request-results");
 const reviewController = require("../controllers/review/index");
 const reviewService = require("../services/reviews/index");
 

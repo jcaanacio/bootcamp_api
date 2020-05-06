@@ -7,7 +7,7 @@ const Auth = require("../middleware/auth");
 const userService = new UserService(userModel);
 const userController = new UserController(userService);
 const auth = new Auth(userService);
-const advanceResults = require("../middleware/advancedRequestResult");
+const advanceResults = require("../middleware/advanced-request-results");
 
 router.use(auth.protect);
 router.use(auth.authorize("admin"));

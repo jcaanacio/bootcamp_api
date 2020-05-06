@@ -1,6 +1,6 @@
-const AsyncHandler = require("../middleware/asyncHandler");
-const geocoder = require("../utils/GeoCoder");
-const Controller = require("../utils/Controller");
+const AsyncHandler = require("../middleware/async-handler");
+const geocoder = require("../utils/geo-coder");
+const Controller = require("../archetypes/Controller");
 const path = require("path");
 class BootcampController extends Controller {
   #bootcampService;

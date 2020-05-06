@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
-const AsyncHandler = require("./asyncHandler");
-const ErrorResponse = require("../utils/ErrorResponse");
+const AsyncHandler = require("./async-handler");
+const ErrorResponse = require("../archetypes/ErrorResponse");
 
 class Auth {
   #userService;
