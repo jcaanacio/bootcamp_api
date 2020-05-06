@@ -2,9 +2,11 @@ const Service = require("../Service");
 
 class ReviewService extends Service {
   #reviewModel;
-  constructor(reviewModel) {
+  #bootcampService;
+  constructor(reviewModel, bootcampService) {
     super(reviewModel);
     this.#reviewModel = reviewModel;
+    this.#bootcampService = bootcampService;
   }
 
   getAllReviewsByBootcampId = async (bootcampId) => {
@@ -44,6 +46,44 @@ class ReviewService extends Service {
 
     return review;
   };
+
+  createBootcampReview = async (review, bootcampId, user) => {
+    if (!bootcampId) {
+      throw { message: `Bootcamp Id required `, statusCode: 412 };
+    }
+
+    if (!user) {
+      throw { message: `User required `, statusCode: 412 };
+    }
+
+    if (!review.title) {
+      throw { message: `Review title required `, statusCode: 412 };
+    }
+
+    if (!review.text) {
+      throw { message: `Review description required `, statusCode: 412 };
+    }
+
+    if (!review.rating) {
+      throw { message: `Review rating required `, statusCode: 412 };
+    }
+
+    review.user = user.id;
+    review.bootcamp = bootcampId;
+
+    const bootcamp = await this.#bootcampService.getById(review.bootcamp);
+
+    if (!bootcamp) {
+      throw {
+        message: `Bootcamp not found with the id of ${review.bootcamp}`,
+      };
+    }
+    const createdReview = await this.create(review);
+
+    return createdReview;
+  };
+
+  updateBootcampReview = async () => {};
 }
 
 module.exports = ReviewService;

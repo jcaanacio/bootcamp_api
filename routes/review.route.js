@@ -10,7 +10,7 @@ const reviewController = require("../controllers/review/index");
 const reviewService = require("../services/reviews/index");
 
 router.use(auth.protect);
-router.use(auth.authorize("admin"));
+router.use(auth.authorize("user", "admin"));
 
 router
   .route("/:id")

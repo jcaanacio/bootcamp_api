@@ -49,7 +49,17 @@ class ReviewController {
    * @route PUT/api/v1/reviews/:id
    * @access Private
    */
-  updateById = AsyncHandler(async (request, response, next) => {});
+  updateById = AsyncHandler(async (request, response, next) => {
+    const review = request.body;
+    const reviewId = request.params.id;
+    const updatedReview = this.#reviewService.updateBootcampReview();
+
+    response.status(200).json({
+      success: true,
+      message: `Successfully updated review ${updatedReview._id}`,
+      body: updatedReview,
+    });
+  });
 
   /**
    * @description Delete a single review by id
@@ -63,7 +73,21 @@ class ReviewController {
    * @route POST/api/v1/bootcamps/:id/reviews
    * @access Private
    */
-  createBootcampReview = AsyncHandler(async (request, response, next) => {});
+  createBootcampReview = AsyncHandler(async (request, response, next) => {
+    const review = request.body;
+
+    const createdReview = await this.#reviewService.createBootcampReview(
+      review,
+      request.params.bootcampId,
+      request.user
+    );
+
+    response.status(201).json({
+      success: true,
+      message: `Review posted for bootcamp ${createdReview.bootcamp}`,
+      body: createdReview,
+    });
+  });
 }
 
 module.exports = ReviewController;
