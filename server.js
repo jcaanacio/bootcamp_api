@@ -41,6 +41,24 @@ app.use(require("./utils/security-headers")(app));
 app.use(require("./utils/security-xss")(app));
 
 /**
+ * HTTP parameters polution
+ */
+app.use(require("./utils/hpp")(app));
+
+/**
+ * Request Rate Limiter
+ */
+const limitOptions = {
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+};
+app.use(require("./utils/rate-limit")(app, limitOptions));
+
+/**
+ * CORS
+ */
+app.use(require("./utils/cross-origin")(app));
+/**
  * Set static folder
  */
 app.use(express.static(path.join(__dirname, "public")));
