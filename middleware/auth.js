@@ -12,11 +12,16 @@ class Auth {
     let token;
     const authorization = request.headers.authorization;
     if (authorization && authorization.startsWith("Bearer")) {
+      /**
+       * Set token from Bearer token in headers
+       */
       token = authorization.split(" ")[1];
+    } else if (request.cookies.token) {
+      /**
+       * Set token from cookie
+       */
+      token = request.cookies.token;
     }
-
-    //   else if (request.cookies.token) {
-    //   }
 
     // Make sure token exists
     if (!token) {
