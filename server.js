@@ -1,32 +1,86 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const BootcampsRouter = require('../bootcamp_api/routes/bootcamps.route');
-const Logger = require('./middleware/logger.middleware');
-const Morgan = require('morgan');
-const connectDB = require('./config/db');
-const colors = require('colors');
-dotenv.config({path: './config/index.env'});
+const path = require("path");
+const express = require("express");
+const dotenv = require("dotenv");
+const connectDB = require("./config/db");
+const colors = require("colors");
+dotenv.config({ path: "./config/index.env" });
 const app = express();
 const PORT = process.env.PORT || 5000;
-const ErrorHandler = require('./middleware/errorHandler.middleware');
-app.use(express.json());
 
 connectDB();
 
-// app.use(Logger);
+/**
+ * Body parser
+ */
+app.use(express.json());
+app.use(require("./utils/cookie-parser")(app));
 
-if (process.env.NODE_ENV === "development") {
-    app.use(Morgan('dev'));
-}
+/**
+ * Loggers
+ */
+app.use(require("./utils/logger")(app));
 
-app.use('/api/v1/bootcamps',BootcampsRouter);
-app.use(ErrorHandler);
+/**
+ * File upload
+ */
+app.use(require("./utils/file-uploader")(app));
+
+/**
+ * Sanitizer
+ */
+app.use(require("./utils/db-sanitizer")(app));
+
+/**
+ * Security headers
+ */
+app.use(require("./utils/security-headers")(app));
+
+/**
+ * Security XSS
+ */
+app.use(require("./utils/security-xss")(app));
+
+/**
+ * HTTP parameters polution
+ */
+app.use(require("./utils/hpp")(app));
+
+/**
+ * Request Rate Limiter
+ */
+const limitOptions = {
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+};
+app.use(require("./utils/rate-limit")(app, limitOptions));
+
+/**
+ * CORS
+ */
+app.use(require("./utils/cross-origin")(app));
+/**
+ * Set static folder
+ */
+app.use(express.static(path.join(__dirname, "public")));
+
+/**
+ * Api
+ */
+app.use(require("./api/devcamper/index")(app));
+
+/**
+ * Error Handler
+ */
+app.use(require("./middleware/errorHandler.middleware"));
+
 const server = app.listen(PORT, () => {
-    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold)
+  console.log(
+    `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold
+  );
 });
 
 //Handle Unhandled promise rejections
-process.on('unhandledRejection', (err, promise) => {
-    console.log(`Error: ${err.message}`.red);
-    server.close(() => process.exit(1));
+process.on("unhandledRejection", (err, promise) => {
+  console.log(`Error: ${err.message}`.red);
+  server.close(() => process.exit(1));
 });
