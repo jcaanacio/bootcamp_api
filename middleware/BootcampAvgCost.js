@@ -1,8 +1,8 @@
 const Bootcamp = require("../models/Bootcamp.model");
-const BootcampAvgRating = (id, avgRating) => {
+const BootcampAvgCost = (id, avgCost) => {
   return Bootcamp.findByIdAndUpdate(id, {
-    averageRating: avgRating,
+    averageCost: Math.ceil(avgCost / 10) * 10,
   });
 };
 
-module.exports = BootcampAvgRating;
+module.exports = BootcampAvgCost;
