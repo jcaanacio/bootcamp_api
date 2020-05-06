@@ -1,5 +1,5 @@
-const AsyncHandler = require("../middleware/asyncHandler");
-const Controller = require("../utils/Controller");
+const AsyncHandler = require("../middleware/async-handler");
+const Controller = require("../archetypes/Controller");
 class CourseController extends Controller {
   #courseService;
   constructor(courseService) {

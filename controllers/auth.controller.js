@@ -1,6 +1,6 @@
-const AsyncHandler = require("../middleware/asyncHandler");
+const AsyncHandler = require("../middleware/async-handler");
 const crypo = require("crypto");
-const TokenController = require("../utils/TokenController");
+const TokenController = require("../archetypes/TokenController");
 
 class AuthController extends TokenController {
   #userService;
@@ -165,6 +165,23 @@ class AuthController extends TokenController {
     );
 
     return this.sendTokenResponse(updatedUserPassword, 200, response);
+  });
+
+  /**
+   * @description Logout
+   * @route GET /api/av1/auth/logout
+   * @access Private
+   */
+  logout = AsyncHandler(async (request, response, next) => {
+    response
+      .status(200)
+      .cookie("token", "none", {
+        expires: new Date(Date.now() + 10 * 1000),
+        httpOnly: true,
+      })
+      .json({
+        success: true,
+      });
   });
 }
 

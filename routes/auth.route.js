@@ -19,4 +19,6 @@ router.put("/updatedetails", auth.protect, authController.updateDetails);
 router
   .route("/updatePassword")
   .patch(auth.protect, authController.updatePassword);
+
+router.get("/logout", auth.protect, authController.logout);
 module.exports = router;

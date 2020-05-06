@@ -1,5 +1,5 @@
-const AsyncHandler = require("../middleware/asyncHandler");
-const TokenController = require("../utils/TokenController");
+const AsyncHandler = require("../middleware/async-handler");
+const TokenController = require("../archetypes/TokenController");
 class UserController extends TokenController {
   #userService;
   constructor(userService) {

@@ -73,16 +73,6 @@ const destroyData = async () => {
   }
 };
 
-const destroyUsers = async () => {
-  try {
-    await Users.deleteMany();
-    console.log(`Users Data Destroyed`.red.inverse);
-    process.exit();
-  } catch (error) {
-    console.log(`Error: ${error}`.red);
-  }
-};
-
 const command = process.argv[2];
 
 if (command === "-i") {

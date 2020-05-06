@@ -1,4 +1,4 @@
-const ErrorResponse = require("../utils/ErrorResponse");
+const ErrorResponse = require("../archetypes/ErrorResponse");
 
 const ErrorHandler = (err, request, response, next) => {
   let error = { ...err };

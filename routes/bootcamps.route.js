@@ -8,7 +8,7 @@ const BootcampModel = require("./../models/Bootcamp.model");
 const BootcampService = require("../services/bootcamp.service");
 const bootcampService = new BootcampService(BootcampModel);
 const bootcampController = new BootcampController(bootcampService);
-const advanceResults = require("../middleware/advancedRequestResult");
+const advanceResults = require("../middleware/advanced-request-results");
 const userService = new UserService(UserModel);
 const auth = new Auth(userService);
 /**

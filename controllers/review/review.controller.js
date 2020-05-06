@@ -1,4 +1,4 @@
-const AsyncHandler = require("../../middleware/asyncHandler");
+const AsyncHandler = require("../../middleware/async-handler");
 
 class ReviewController {
   #reviewService;

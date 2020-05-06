@@ -8,7 +8,7 @@ const CourseService = require("../services/course.service");
 const UserModel = require("../models/Users.model");
 const UserService = require("../services/user.service");
 const Auth = require("../middleware/auth");
-const advanceResults = require("../middleware/advancedRequestResult");
+const advanceResults = require("../middleware/advanced-request-results");
 const userService = new UserService(UserModel);
 const auth = new Auth(userService);
 
