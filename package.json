@@ -4,8 +4,11 @@
   "description": "DevCamper backend API",
   "main": "server.js",
   "scripts": {
-    "start": "SET NODE_ENV=production&nodemon server",
+    "start": "node server.js",
     "dev": "nodemon server"
+  },
+  "engines": {
+    "node": "12.16.0"
   },
   "repository": {
     "type": "git",
