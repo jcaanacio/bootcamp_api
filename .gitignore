@@ -105,6 +105,6 @@ dist
 
 
 # Environment Configuration file
-config/index.env
+# config/index.env
 
 public/uploads
